@@ -7,7 +7,7 @@ from data.users import User
 from data.ideas import Ideas
 from forms.user import RegisterForm, LoginForm, CodeFromMailForm
 from forms.idea import IdeasForm
-from mail import send_registration_code
+from mail import send_registration_code, send_mail_about_new_idea
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
@@ -72,7 +72,7 @@ def code_for_register(filename):
             user = User(
                 name=us_name,
                 email=us_mail,
-                picture=url_for("static", filename="users_pictures/standart.png")
+                picture=url_for("static", filename="img/users_pictures/standart.png")
             )
             user.set_password(us_password)
             db_sess.add(user)
@@ -110,6 +110,7 @@ def add_idea():
         ideas.title = form.title.data
         ideas.content = form.content.data
         current_user.ideas.append(ideas)
+        send_mail_about_new_idea(ideas)
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
