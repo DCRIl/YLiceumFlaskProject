@@ -4,6 +4,10 @@ from sqlalchemy import orm
 
 from .db_session import SqlAlchemyBase
 
+user_likes = sqlalchemy.Table("user_likes", SqlAlchemyBase.metadata,
+                              sqlalchemy.Column("users", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id")),
+                              sqlalchemy.Column("ideas", sqlalchemy.Integer, sqlalchemy.ForeignKey("ideas.id")))
+
 
 class Ideas(SqlAlchemyBase):
     __tablename__ = 'ideas'
@@ -14,7 +18,7 @@ class Ideas(SqlAlchemyBase):
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
-    likes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("users.id"))
-    user = orm.relationship('User')
+    autor = orm.relationship('User')
+    likes = orm.relationship("User", secondary="user_likes", backref="ideas.id")

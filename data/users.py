@@ -17,7 +17,10 @@ class User(SqlAlchemyBase, UserMixin):
     picture = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False, default=False)
 
-    ideas = orm.relationship("Ideas", back_populates='user')
+    user_ideas = orm.relationship("Ideas", back_populates='autor')
+    # like = orm.relationship("Ideas", back_populates='likes')
+    phone_number = sqlalchemy.Column(sqlalchemy.String, default=None)
+    count_likes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

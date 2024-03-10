@@ -3,24 +3,33 @@
 {% block content %}
 {% for idea in ideas %}
 <br>
-<div class="container shadow-sm p-3 mb-5 bg-body rounded">
-    <div class="col">
-        <h1>Идея: {{idea.title}} --- Автор: {{ idea.user.name }}</h1>
-        <p>{{ idea.created_date }}</p>
+<div class="card shadow-sm p-3 mb-5 bg-body rounded">
+    <div class="row">
+        <img src="{{ url_for('static', filename='img/users_pictures/' + idea.autor.picture) }}" width="5%"
+             class="rounded">
+        <h1>{{ idea.autor.name }}</h1>
     </div>
-    <div class="col">
+    <div class="row">
+        <p>{{ idea.created_date.date() }}</p>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-1"></div>
         <p>{{ idea.content }}</p>
     </div>
-    <div class="col">
-        <div class="row-md-3"></div>
-        <div class="row-md-6">
-            <h6>Лайков: {{idea.likes}}</h6>
-            {% if current_user.is_authenticated %}
-            <a class="btn btn-success" href="/ideas_like/{{ idea.id }}">Понравилась</a>
+    <hr>
+    <div class="row"><br></div>
+    <div class="row"><br>
+        <div class="col-md-3" align="center"><h6>Лайков: {{idea.likes|length}}</h6></div>
+        <div class="col-md-6">
+            {% if current_user.is_authenticated and current_user not in idea.likes%}
+            <a class="btn btn-success" href="/ideas_like/{{ idea.id }}">Понравилось</a>
+            {% else %}
+            <a class="btn btn-danger" href="/ideas_dont_like/{{ idea.id }}">Отменить</a>
             {% endif %}
         </div>
         {% if current_user.is_authenticated and current_user.is_admin %}
-        <div class="col">
+        <div class="col-md-3">
             <a class="btn btn-danger" href="/ideas_delete/{{ ideas.id }}">Удалить</a>
         </div>
         {% endif %}

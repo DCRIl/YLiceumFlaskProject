@@ -8,6 +8,7 @@
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
     <link rel="stylesheet" href="static/css/password.css">
+    <link rel="stylesheet" href="static/css/user_prof.css">
     <title>{{ title }}</title>
 </head>
 <body>
@@ -22,7 +23,20 @@
         <a class="navbar-brand" href="#">Тут могла быть ваша организация</a>
         {% if current_user.is_authenticated %}
         <a class="btn btn-success" href="/ideas">Добавьте вашу идею</a>
-        <a class="navbar-brand" href="/logout">{{current_user.name}}</a>
+        <!-- Пример отдельной кнопки danger -->
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                {{current_user.name}}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item btn-primary" href="/user_profile">Ваш профиль</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger btn-danger" href="/logout">Выйти</a></li>
+            </ul>
+        </div>
         {% else %}
         <p>
             <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
@@ -36,6 +50,18 @@
     {% block content %}
 
     {% endblock %}
+    <div class="container">
+        <footer class="py-3 my-4">
+            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Главная</a></li>
+                <li class="nav-item"><a href="/" class="nav-link px-2 text-muted">Все предложенные идеи</a></li>
+<!--                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted"></a></li>-->
+<!--                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Ответы</a></li>-->
+<!--                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">О нас</a></li>-->
+            </ul>
+            <p class="text-center text-muted">© 2024 Тут могла быть ваша компания</p>
+        </footer>
+    </div>
 </main>
 </body>
 </html>

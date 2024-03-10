@@ -1,7 +1,7 @@
 import os
 import random
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from data import db_session
 from data.users import User
 from data.ideas import Ideas
@@ -15,6 +15,8 @@ app.config['SECRET_KEY'] = 'admin_arise_pythonanywhere'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+UPLOAD_FOLDER = 'static/img/users_pictures'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -72,7 +74,7 @@ def code_for_register(filename):
             user = User(
                 name=us_name,
                 email=us_mail,
-                picture=url_for("static", filename="img/users_pictures/standart.png")
+                picture="standart.png"
             )
             user.set_password(us_password)
             db_sess.add(user)
@@ -109,7 +111,7 @@ def add_idea():
         ideas = Ideas()
         ideas.title = form.title.data
         ideas.content = form.content.data
-        current_user.ideas.append(ideas)
+        current_user.user_ideas.append(ideas)
         send_mail_about_new_idea(ideas)
         db_sess.merge(current_user)
         db_sess.commit()
@@ -118,18 +120,34 @@ def add_idea():
                            form=form)
 
 
-@app.route("/ideas_like/<int:id>", methods=["GET", "POST"])
+@app.route("/ideas_like/<int:iid>", methods=["GET", "POST"])
 @login_required
-def ideas_like(id):
+def ideas_like(iid):
     db_sess = db_session.create_session()
-    ideas = db_sess.query(Ideas).filter(Ideas.id == id).first()
-    if ideas:
-        ideas.likes += 1
+    ideas__ = db_sess.query(Ideas).filter(Ideas.id == iid).first()
+    us = db_sess.query(User).filter(User.id == current_user.id).first()
+    if ideas__:
+        ideas__.likes.append(us)
+        current_user.count_likes += 1
         db_sess.commit()
     else:
         return redirect("/404")
     return redirect("/")
 
+
+@app.route("/ideas_dont_like/<int:iid>", methods=["GET", "POST"])
+@login_required
+def ideas_dont_like(iid):
+    db_sess = db_session.create_session()
+    ideas__ = db_sess.query(Ideas).filter(Ideas.id == iid).first()
+    us = db_sess.query(User).filter(User.id == current_user.id).first()
+    if ideas__:
+        ideas__.likes.remove(us)
+        current_user.count_likes -= 1
+        db_sess.commit()
+    else:
+        return redirect("/404")
+    return redirect("/")
 
 @app.route('/ideas_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -144,6 +162,21 @@ def ideas_delete(id):
     else:
         return redirect("/404")
     return redirect('/')
+
+
+@app.route("/user_profile", methods=["GET", "POST", "PATCH"])
+@login_required
+def user_profile():
+    if request.method == "POST":
+        file = request.files['photo']
+        if file:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+            db_sess = db_session.create_session()
+            us = db_sess.query(User).filter(User.id == current_user.id).first()
+            us.picture = file.filename
+            db_sess.commit()
+        return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
+    return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
 
 
 @app.route('/logout')
