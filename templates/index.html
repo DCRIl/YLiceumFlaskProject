@@ -24,7 +24,7 @@
         <div class="col-md-6">
             {% if current_user.is_authenticated and current_user not in idea.likes%}
             <a class="btn btn-success" href="/ideas_like/{{ idea.id }}">Понравилось</a>
-            {% else %}
+            {% elif current_user.is_authenticated and current_user in idea.likes %}
             <a class="btn btn-danger" href="/ideas_dont_like/{{ idea.id }}">Отменить</a>
             {% endif %}
         </div>

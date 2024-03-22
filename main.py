@@ -9,7 +9,7 @@ from data.users import User
 from data.ideas import Ideas
 from forms.user import RegisterForm, LoginForm, CodeFromMailForm
 from forms.idea import IdeasForm
-from mail import send_registration_code, send_mail_about_new_idea
+from mail import send_registration_code, send_mail_about_new_idea, send_edit_code
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api
 
@@ -32,7 +32,7 @@ def load_user(user_id):
 @app.route('/')
 def index():
     db_sess = db_session.create_session()
-    ideas = db_sess.query(Ideas).all()
+    ideas = db_sess.query(Ideas).all()[::-1]
     return render_template('index.html', title='Все идеи и предложения', ideas=ideas)
 
 
@@ -159,9 +159,7 @@ def ideas_dont_like(iid):
 @login_required
 def ideas_delete(id):
     db_sess = db_session.create_session()
-    ideas = db_sess.query(Ideas).filter(Ideas.id == id,
-                                        Ideas.user == current_user
-                                        ).first()
+    ideas = db_sess.query(Ideas).filter(Ideas.id == id, current_user.is_admin).first()
     if ideas:
         db_sess.delete(ideas)
         db_sess.commit()
@@ -174,15 +172,55 @@ def ideas_delete(id):
 @login_required
 def user_profile():
     if request.method == "POST":
-        file = request.files['photo']
-        if file:
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        if request.form["btn"] == "photo":
+            file = request.files['photo']
+            if file:
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+                db_sess = db_session.create_session()
+                us = db_sess.query(User).filter(User.id == current_user.id).first()
+                us.picture = file.filename
+                db_sess.commit()
+            return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
+        elif request.form["btn"] == "edit":
             db_sess = db_session.create_session()
             us = db_sess.query(User).filter(User.id == current_user.id).first()
-            us.picture = file.filename
+            us.name = request.form["ed_name"]
+            us.phone_number = request.form["ed_phone"]
             db_sess.commit()
-        return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
+            if us.email != request.form["ed_email"]:
+                filename = request.form["ed_email"] + ".txt"
+                code = random.randrange(10000, 100000)
+                with open(filename, "w", encoding="utf8") as file:
+                    file.write(request.form["ed_email"] + "\n")
+                    file.write(str(code))
+                send_edit_code(filename)
+                return redirect(f'/code_for_edit/{filename}')
+            return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
     return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
+
+
+@app.route("/code_for_edit/<filename>", methods=['GET', 'POST'])
+def code_for_edit(filename):
+    form = CodeFromMailForm()
+    try:
+        with open(filename, encoding="utf-8") as file:
+            f = list(map(str.strip, file.readlines()))
+            us_mail = f[0]
+            code = int(f[1])
+    except Exception:
+        return redirect("/404")
+    if form.validate_on_submit():
+        if form.code.data == code:
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(User.id == current_user.id).first()
+            user.email = us_mail
+            db_sess.commit()
+            os.remove(filename)
+            return redirect("/user_profile")
+        else:
+            return render_template('code_from_mail.html', title='Введите код с почты',
+                                   form=form, mail=us_mail, message="Не правильный код, попробуйте снова")
+    return render_template("code_from_mail.html", title="Введите код с почты", form=form, mail=us_mail)
 
 
 @app.route('/logout')

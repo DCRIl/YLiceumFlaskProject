@@ -28,7 +28,7 @@ class IdeasListResource(Resource):
         session = db_session.create_session()
         ideas = session.query(Ideas).all()
         return jsonify({'ideas': [item.to_dict(
-            only=('title', 'content', 'user.name')) for item in ideas]})
+            only=('title', 'content', 'autor.name')) for item in ideas]})
 
     def post(self):
         args = parser.parse_args()

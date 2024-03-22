@@ -15,9 +15,31 @@
         success.type = "success";
         success.className = "btn btn-primary";
         success.textContent = "Загрузить";
+        success.value = "photo";
+        success.name = "btn";
         dv.appendChild(success);
     }
+
+    function edit_profile() {
+        var name = document.getElementById("ed_name");
+        name.removeAttribute("disabled");
+        var email = document.getElementById("ed_email");
+        email.removeAttribute("disabled");
+        var phone = document.getElementById("ed_phone");
+        phone.removeAttribute("disabled");
+        var ed = document.getElementById("edit");
+        var dv_ed = document.getElementById("edit_div");
+        ed.parentNode.removeChild(ed);
+        var edit = document.createElement("button");
+        edit.textContent = "Сохранить";
+        edit.className = "btn btn-outline-info";
+        edit.type = "success"
+        edit.name = "btn";
+        edit.value = "edit";
+        dv_ed.appendChild(edit);
+    }
 </script>
+<form action="" method="post" enctype="multipart/form-data">
 <div class="container">
     <div class="main-body">
         <div class="row gutters-sm">
@@ -28,16 +50,12 @@
                             <img src="{{ url_for('static', filename='img/users_pictures/' + current_user.picture) }}"
                                  alt="Admin"
                                  class="rounded-circle" width="150">
-                            <form action="" method="post" enctype="multipart/form-data">
                                 <div class="mt-3" id="us_photo">
                                     <h4>{{ current_user.name }}</h4>
-                                    <!--                                <p class="text-secondary mb-1">Full Stack Developer</p>-->
-                                    <!--                                <p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p>-->
                                     <button class="btn btn-outline-primary" id="but" onclick="user_photo_input()">
                                         Сменить фото профиля
                                     </button>
                                 </div>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -53,7 +71,7 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                             <img src="{{ url_for('static', filename='img/like.png') }}" width="9%" class="rounded">
                             <h6 class="mb-0">
-                                Количество оставленных лайков</ла>
+                                Количество оставленных лайков
                             </h6>
                             <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.ideas|length }}</i></span>
                         </li>
@@ -62,7 +80,8 @@
                 {% if current_user.ideas|length > 2 %}
                 <div class="card mt-3">
                     <br>
-                    <h3 class="mb-0" align="center"><a class="btn btn-outline-dark" href="#">Посмотреть все ваши идеи</a></h3>
+                    <h3 class="mb-0" align="center"><a class="btn btn-outline-dark" href="#">Посмотреть все ваши
+                        идеи</a></h3>
                     <br>
                 </div>
                 {% endif %}
@@ -75,7 +94,7 @@
                                 <h6 class="mb-0">ФИО</h6>
                             </div>
                             <div class="col-sm-9 text-secondary">
-                                {{ current_user.name }}
+                                <input class="form-control" value="{{ current_user.name }}" disabled id="ed_name" name="ed_name">
                             </div>
                         </div>
                         <hr>
@@ -84,7 +103,7 @@
                                 <h6 class="mb-0">Почта</h6>
                             </div>
                             <div class="col-sm-9 text-secondary">
-                                {{ current_user.email }}
+                                <input type="email" class="form-control" value="{{ current_user.email }}" disabled id="ed_email" name="ed_email">
                             </div>
                         </div>
                         <hr>
@@ -94,17 +113,16 @@
                             </div>
                             <div class="col-sm-9 text-secondary">
                                 {% if current_user.phone_number %}
-                                <h6 class="mb-0">{{ current_user.phone_number }}</h6>
+                                <input class="form-control" value="{{ current_user.phone_number }}" disabled id="ed_phone" name="ed_phone">
                                 {% else %}
-                                <h6 class="mb-0">Вы можете оставить свой номер телефона</h6>
+                                <input class="form-control" value="Вы можете оставить свой номер телефона" disabled id="ed_phone" name="ed_phone">
                                 {% endif %}
                             </div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-12">
-                                <a class="btn btn-info" target="__blank"
-                                   href="">Изменить</a>
+                            <div class="col-sm-12" id="edit_div">
+                                <button class="btn btn-info" id="edit" onclick="edit_profile()">Изменить</button>
                             </div>
                         </div>
                     </div>
@@ -153,44 +171,8 @@
                     </div>
                 </div>
                 {% endif %}
-                <!--                    <div class="col-sm-6 mb-3">-->
-                <!--                        <div class="card h-100">-->
-                <!--                            <div class="card-body">-->
-                <!--                                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project-->
-                <!--                                    Status</h6>-->
-                <!--                                <small>Web Design</small>-->
-                <!--                                <div class="progress mb-3" style="height: 5px">-->
-                <!--                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 80%"-->
-                <!--                                         aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>-->
-                <!--                                </div>-->
-                <!--                                <small>Website Markup</small>-->
-                <!--                                <div class="progress mb-3" style="height: 5px">-->
-                <!--                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 72%"-->
-                <!--                                         aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>-->
-                <!--                                </div>-->
-                <!--                                <small>One Page</small>-->
-                <!--                                <div class="progress mb-3" style="height: 5px">-->
-                <!--                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 89%"-->
-                <!--                                         aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>-->
-                <!--                                </div>-->
-                <!--                                <small>Mobile Template</small>-->
-                <!--                                <div class="progress mb-3" style="height: 5px">-->
-                <!--                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 55%"-->
-                <!--                                         aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>-->
-                <!--                                </div>-->
-                <!--                                <small>Backend API</small>-->
-                <!--                                <div class="progress mb-3" style="height: 5px">-->
-                <!--                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 66%"-->
-                <!--                                         aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>-->
-                <!--                                </div>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-
-
             </div>
-
         </div>
     </div>
-    {% endblock %}
+</form>
+{% endblock %}

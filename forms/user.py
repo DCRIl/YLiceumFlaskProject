@@ -20,4 +20,4 @@ class LoginForm(FlaskForm):
 
 class CodeFromMailForm(FlaskForm):
     code = IntegerField("Код с почты ", validators=[DataRequired(), InputRequired()])
-    submit = SubmitField("Подтвердить регистрацию")
+    submit = SubmitField("Подтвердить")
