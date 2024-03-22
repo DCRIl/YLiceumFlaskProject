@@ -1,5 +1,7 @@
 import os
 import random
+import data.ideas_resources
+import data.users_resources
 
 from flask import Flask, render_template, redirect, url_for, request
 from data import db_session
@@ -9,14 +11,17 @@ from forms.user import RegisterForm, LoginForm, CodeFromMailForm
 from forms.idea import IdeasForm
 from mail import send_registration_code, send_mail_about_new_idea
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_restful import Api
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'admin_arise_pythonanywhere'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 UPLOAD_FOLDER = 'static/img/users_pictures'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -128,7 +133,7 @@ def ideas_like(iid):
     us = db_sess.query(User).filter(User.id == current_user.id).first()
     if ideas__:
         ideas__.likes.append(us)
-        current_user.count_likes += 1
+        us.count_likes += 1
         db_sess.commit()
     else:
         return redirect("/404")
@@ -148,6 +153,7 @@ def ideas_dont_like(iid):
     else:
         return redirect("/404")
     return redirect("/")
+
 
 @app.route('/ideas_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -193,4 +199,8 @@ def error404():
 
 if __name__ == '__main__':
     db_session.global_init("db/ideas_and_more.db")
+    api.add_resource(data.ideas_resources.IdeasListResource, "/api/ideas")
+    api.add_resource(data.ideas_resources.IdeasResource, "/api/ideas/<int:ideas_id>")
+    api.add_resource(data.users_resources.UserListResource, "/api/users")
+    api.add_resource(data.users_resources.UserResource, "/api/user/<int:user_id>")
     app.run(debug=True)

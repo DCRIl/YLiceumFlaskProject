@@ -1,6 +1,7 @@
 import datetime
 import sqlalchemy
 from sqlalchemy import orm
+from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
 
@@ -9,7 +10,7 @@ user_likes = sqlalchemy.Table("user_likes", SqlAlchemyBase.metadata,
                               sqlalchemy.Column("ideas", sqlalchemy.Integer, sqlalchemy.ForeignKey("ideas.id")))
 
 
-class Ideas(SqlAlchemyBase):
+class Ideas(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'ideas'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
