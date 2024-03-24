@@ -9,6 +9,7 @@
           crossorigin="anonymous">
     <link rel="stylesheet" href="static/css/password.css">
     <link rel="stylesheet" href="static/css/user_prof.css">
+    <link rel="stylesheet" href="static/css/hamburgers.css">
     <title>{{ title }}</title>
 </head>
 <body>
@@ -19,30 +20,39 @@
 <script src="static/javascript/show_hide_password.js"></script>
 <script src="static/javascript/comparison_passwords.js"></script>
 <header>
-    <nav class="navbar navbar-dark bg-dark shadow-lg p-3 mb-5 bg-body">
-        <a class="navbar-brand" href="#">Тут могла быть ваша организация</a>
-        {% if current_user.is_authenticated %}
-        <a class="btn btn-success" href="/ideas">Добавьте вашу идею</a>
-        <!-- Пример отдельной кнопки danger -->
-        <div class="btn-group">
-            <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                {{current_user.name}}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg p-3 mb-5 bg-body">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Тут могла быть ваша организация</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBasic"
+                    aria-controls="navbarBasic" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item btn-primary" href="/user_profile">Ваш профиль</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item text-danger btn-danger" href="/logout">Выйти</a></li>
-            </ul>
+            <div class="collapse navbar-collapse show" id="navbarBasic">
+                <hr>
+                {% if current_user.is_authenticated %}
+                <a class="btn btn-outline-success" href="/ideas">Добавьте вашу идею</a>
+                <hr>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        {{current_user.name}}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item btn-primary" href="/user_profile">Ваш профиль</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger btn-danger" href="/logout">Выйти</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <p>
+                    <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+                    <a class="btn btn-success" href="/login">Войти</a>
+                </p>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <p>
-            <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
-            <a class="btn btn-success" href="/login">Войти</a>
-        </p>
-        {% endif %}
     </nav>
 </header>
 <!-- Begin page content -->

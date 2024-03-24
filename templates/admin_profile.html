@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+    function user_photo_input() {
+        var but = document.getElementById("but")
+        but.parentNode.removeChild(but);
+        var dv = document.getElementById("us_photo")
+        var input = document.createElement("input")
+        var success = document.createElement("button")
+        input.type = "file";
+        input.name = "photo";
+        input.class = "form-control-file";
+        dv.appendChild(input);
+        success.type = "success";
+        success.className = "btn btn-primary";
+        success.textContent = "Загрузить";
+        success.value = "photo";
+        success.name = "btn";
+        dv.appendChild(success);
+    }
+
+    function edit_profile() {
+        var name = document.getElementById("ed_name");
+        name.removeAttribute("disabled");
+        var email = document.getElementById("ed_email");
+        email.removeAttribute("disabled");
+        var phone = document.getElementById("ed_phone");
+        phone.removeAttribute("disabled");
+        var ed = document.getElementById("edit");
+        var dv_ed = document.getElementById("edit_div");
+        ed.parentNode.removeChild(ed);
+        var edit = document.createElement("button");
+        edit.textContent = "Сохранить";
+        edit.className = "btn btn-outline-info";
+        edit.type = "success"
+        edit.name = "btn";
+        edit.value = "edit";
+        dv_ed.appendChild(edit);
+    }
+</script>
+<form action="" method="post" enctype="multipart/form-data">
+    <div class="container">
+        <div class="main-body">
+            <div class="row gutters-sm">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <img src="{{ url_for('static', filename='img/users_pictures/' + current_user.picture) }}"
+                                     alt="Admin"
+                                     class="rounded-circle" width="150">
+                                <div class="mt-3" id="us_photo">
+                                    <h4>{{ current_user.name }}</h4>
+                                    <button class="btn btn-outline-primary" id="but" onclick="user_photo_input()">
+                                        Сменить фото профиля
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                <img src="{{ url_for('static', filename='img/idea.jpg') }}" width="12%" class="rounded">
+                                <h4 class="mb-0">
+                                    Количество Идей
+                                </h4>
+                                <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.user_ideas|length }}</i></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                <img src="{{ url_for('static', filename='img/like.png') }}" width="9%" class="rounded">
+                                <h6 class="mb-0">
+                                    Количество оставленных лайков
+                                </h6>
+                                <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.user_ideas|length }}</i></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <br>
+                    {% if current_user.user_ideas %}
+                    {% for i in range(0, 2 if current_user.user_ideas|length >= 2 else current_user.user_ideas|length)
+                    %}
+                    <div class="col-sm-12 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="d-flex align-items-center mb-3"><i
+                                        class="material-icons text-info mr-2">Идея</i>{{current_user.user_ideas[i].title}}
+                                </h6>
+                                <hr>
+                                <small>Создана: {{ current_user.user_ideas[i].created_date.date() }}</small><br>
+                                <hr>
+                                <small>Идеа: {{ current_user.user_ideas[i].content }}</small><br>
+                                <hr>
+                                <small>Лайки: {{ current_user.user_ideas[i].likes|length }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if current_user.user_ideas|length == 1 %}
+                    <div class="col-sm-12 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body" align="center"><br>
+                                <h4>Оставьте ещё идею</h4>
+                                <a class="btn btn-info text-white" href="/ideas">Оставьте идею</a>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="row gutters-sm">
+                        <div class="col-sm-12 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body" align="center"><br>
+                                    <h4>Вы ещё не оставляли идей</h4>
+                                    <a class="btn btn-primary text-white" href="/ideas">Оставьте идею</a>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">ФИО</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input class="form-control" value="{{ current_user.name }}" disabled id="ed_name"
+                                           name="ed_name">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Почта</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    <input type="email" class="form-control" value="{{ current_user.email }}" disabled
+                                           id="ed_email" name="ed_email">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Номер телефона</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    {% if current_user.phone_number %}
+                                    <input class="form-control" value="{{ current_user.phone_number }}" disabled
+                                           id="ed_phone" name="ed_phone">
+                                    {% else %}
+                                    <input class="form-control" value="Вы можете оставить свой номер телефона" disabled
+                                           id="ed_phone" name="ed_phone">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-12" id="edit_div">
+                                    <button class="btn btn-info" id="edit" onclick="edit_profile()">Изменить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            {% if users|length > 1 %}
+                            {% for user in users[:-1] if user != current_user %}
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <p>{{ user.name }}</p>
+                                </div>
+                                <div class="col-sm-5">
+                                    <p>{{ user.email }}</p>
+                                </div>
+                                <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">|||</button>
+                                <ul class="dropdown-menu">
+                                {% if not user.is_admin %}
+                                    <li><a class="dropdown-item text-warning btn-warning" href="/user_add_admin/{{user.id}}">Сделать админом</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-danger btn-danger" href="/delete_user/{{user.id}}">Удалить пользователя</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item text-danger btn-danger" href="/user_del_admin/{{user.id}}">Убрать права админа</a></li>
+                                {% endif %}
+                                </ul>
+                            </div>
+                            <hr>
+                            {% endfor %}
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <p>{{ users[-1].name }}</p>
+                                </div>
+                                <div class="col-sm-5">
+                                    <p>{{ users[-1].email }}</p>
+                                </div>
+                                <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">|||</button>
+                                <ul class="dropdown-menu">
+                                {% if not users[-1].is_admin %}
+                                    <li><a class="dropdown-item text-warning btn-warning" href="/user_add_admin/{{users[-1].id}}">Сделать админом</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-danger btn-danger" href="/delete_user/{{users[-1].id}}">Удалить пользователя</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item text-danger btn-danger" href="/user_del_admin/{{users[-1].id}}">Убрать права админа</a></li>
+                                {% endif %}
+                                </ul>
+                            </div>
+                            {% else %}
+                            <p>Пока нет других пользователей кроме вас :-(</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+{% endblock %}

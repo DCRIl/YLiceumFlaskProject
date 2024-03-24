@@ -116,7 +116,7 @@ def send_mail_about_new_idea(ideas):
         <table role="presentation" border="0" cellpadding="0" cellspacing="10px" style="padding: 10px 30px 30px 10px;">
             <tr>
                 <td>
-                    <h3>Пользователь: {ideas.user.name}<br><br>С почтой: {ideas.user.email}<br><br>Оставил новую идею:<br><br></h3>
+                    <h3>Пользователь: {ideas.autor.name}<br><br>С почтой: {ideas.autor.email}<br><br>Оставил новую идею:<br><br></h3>
                     <h1>
                         {ideas.title}
                     </h1>

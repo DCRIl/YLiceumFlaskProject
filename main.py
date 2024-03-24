@@ -168,9 +168,47 @@ def ideas_delete(id):
     return redirect('/')
 
 
+@app.route('/user_add_admin/<int:id>', methods=['GET', 'POST'])
+def user_add_admin(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id, current_user.is_admin).first()
+    if user:
+        user.is_admin = True
+        db_sess.commit()
+    else:
+        return redirect("/404")
+    return redirect('/user_profile')
+
+
+@app.route('/user_del_admin/<int:id>', methods=['GET', 'POST'])
+def user_del_admin(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id, current_user.is_admin).first()
+    if user:
+        user.is_admin = False
+        db_sess.commit()
+    else:
+        return redirect("/404")
+    return redirect('/user_profile')
+
+
+@app.route('/delete_user/<int:id>', methods=['GET', 'POST'])
+def delete_user(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id, current_user.is_admin).first()
+    if user:
+        db_sess.delete(user)
+        db_sess.commit()
+    else:
+        return redirect("/404")
+    return redirect('/user_profile')
+
+
 @app.route("/user_profile", methods=["GET", "POST", "PATCH"])
 @login_required
 def user_profile():
+    db_sess = db_session.create_session()
+    users = db_sess.query(User).all()
     if request.method == "POST":
         if request.form["btn"] == "photo":
             file = request.files['photo']
@@ -180,7 +218,7 @@ def user_profile():
                 us = db_sess.query(User).filter(User.id == current_user.id).first()
                 us.picture = file.filename
                 db_sess.commit()
-            return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
+            return render_template("user_profile.html" if not current_user.is_admin else "admin_profile.html", title=f"Страница пользователя {current_user.name}", users=users)
         elif request.form["btn"] == "edit":
             db_sess = db_session.create_session()
             us = db_sess.query(User).filter(User.id == current_user.id).first()
@@ -195,8 +233,8 @@ def user_profile():
                     file.write(str(code))
                 send_edit_code(filename)
                 return redirect(f'/code_for_edit/{filename}')
-            return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
-    return render_template("user_profile.html", title=f"Страница пользователя {current_user.name}")
+            return render_template("user_profile.html" if not current_user.is_admin else "admin_profile.html", title=f"Страница пользователя {current_user.name}", users=users)
+    return render_template("user_profile.html" if not current_user.is_admin else "admin_profile.html", title=f"Страница пользователя {current_user.name}", users=users)
 
 
 @app.route("/code_for_edit/<filename>", methods=['GET', 'POST'])

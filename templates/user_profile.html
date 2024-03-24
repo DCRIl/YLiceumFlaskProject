@@ -66,18 +66,18 @@
                             <h4 class="mb-0">
                                 Количество Идей
                             </h4>
-                            <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.ideas|length }}</i></span>
+                            <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.user_ideas|length }}</i></span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                             <img src="{{ url_for('static', filename='img/like.png') }}" width="9%" class="rounded">
                             <h6 class="mb-0">
                                 Количество оставленных лайков
                             </h6>
-                            <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.ideas|length }}</i></span>
+                            <span class="text-secondary"><i class="material-icons text-info mr-2">{{ current_user.user_ideas|length }}</i></span>
                         </li>
                     </ul>
                 </div>
-                {% if current_user.ideas|length > 2 %}
+                {% if current_user.user_ideas|length > 2 %}
                 <div class="card mt-3">
                     <br>
                     <h3 class="mb-0" align="center"><a class="btn btn-outline-dark" href="#">Посмотреть все ваши
@@ -127,26 +127,26 @@
                         </div>
                     </div>
                 </div>
-                {% if current_user.ideas %}
+                {% if current_user.user_ideas %}
                 <div class="row gutters-sm">
-                    {% for i in range(0, 2 if current_user.ideas|length >= 2 else current_user.ideas|length) %}
+                    {% for i in range(0, 2 if current_user.user_ideas|length >= 2 else current_user.user_ideas|length) %}
                     <div class="col-sm-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
                                 <h6 class="d-flex align-items-center mb-3"><i
-                                        class="material-icons text-info mr-2">Идея</i>{{current_user.ideas[i].title}}
+                                        class="material-icons text-info mr-2">Идея</i>{{current_user.user_ideas[i].title}}
                                 </h6>
                                 <hr>
-                                <small>Создана: {{ current_user.ideas[i].created_date.date() }}</small><br>
+                                <small>Создана: {{ current_user.user_ideas[i].created_date.date() }}</small><br>
                                 <hr>
-                                <small>Идеа: {{ current_user.ideas[i].content }}</small><br>
+                                <small>Идеа: {{ current_user.user_ideas[i].content }}</small><br>
                                 <hr>
-                                <small>Лайки: {{ current_user.ideas[i].likes }}</small>
+                                <small>Лайки: {{ current_user.user_ideas[i].likes|length }}</small>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
-                    {% if current_user.ideas|length == 1 %}
+                    {% if current_user.user_ideas|length == 1 %}
                     <div class="col-sm-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body" align="center"><br>
