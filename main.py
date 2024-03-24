@@ -2,6 +2,7 @@ import os
 import random
 import data.ideas_resources
 import data.users_resources
+import git
 
 from flask import Flask, render_template, redirect, url_for, request
 from data import db_session
@@ -27,6 +28,19 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
+
+
+@app.route('/update_server', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        repo = git.Repo('path/to/git_repo')
+        origin = repo.remotes.tru
+
+        origin.pull()
+
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
 
 @app.route('/')
